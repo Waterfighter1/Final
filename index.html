@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        Developer: Chloe Gertner
+        Date: 5/19/22
+        File Name: index.html
+        Assignment: Final (ooo Scary)
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes</title>
+    <!-- My Styles-->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+<body> 
+    <!-- This is the Div that is affected by Vue ( Id is the same to the "el" in the Vue)-->
+    <div id="VueDiv">  
+        <!-- This is a Vue For Loop, that goes through every quote in the quotes array-->
+        <div v-for="quote in quotes">
+            <!-- Displays Quote Text and Quote Author-->
+            <h3> {{quote.quoteText}}</h3>
+            <h5> {{quote.quoteAuthor}}</h5>
+
+            <!-- This is the button -->
+            <button v-on:click="getQuotesFromSA(quote)"> Get More Quotes From This Author </button>
+
+            <hr>
+        </div>
+    </div>
+
+    <!-- Start Of Scripts -->
+    <script>                                                                                                        
+    
+        axios.get("https://quote-garden.herokuapp.com/api/v3/quotes").then ( (response) => {                         // This is my Axios Call, it makes the Request to the API
+            const app = new Vue({                                                                                    // After I get my response from My API, It creates a vue Component called "app"
+            el: "#VueDiv",                                                                                           // This determines what div is using vue ( element )
+            data:  {                                                                                                 // This "Data" holds things I can access in my HTML
+                quotes: response.data.data,                                                                          // I set the "quotes" Array = to the response from the API full of quotes
+            },
+            methods: {                                                                                               // This "Methods" holds methods I can access in my HTML
+                getQuotesFromSA(quote) {                                                                             // This Method "getQuotesFromSA" (get Quotes from Same Author) tries to get the quotes from the same author
+                    axios.get("https://quote-garden.herokuapp.com/api/v3/quotes").then ( (response) => {             // I couldn't get my parameters to work, so it makes another basic call
+                        randNum = Math.floor(Math.random() * response.data.data.length)                              // It generates a random number from 0 to the highest number in the response array
+                        quote.quoteText = response.data.data[randNum].quoteText;                                     // It replaces the Used quote Textwith the new one
+                        quote.quoteAuthor = response.data.data[randNum].quoteAuthor;                                 // It reaplces the Used quote Author with the new one
+                    });
+                }
+            }
+            });
+        } )
+
+    </script>  
+    <!-- End Of Scripts-->                                                                                                             
+</body>
+</html>
